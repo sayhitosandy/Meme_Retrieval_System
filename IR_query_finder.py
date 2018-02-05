@@ -28,6 +28,12 @@ q = input()
 query = reg_tokenizer.tokenize(q)
 # print(query)
 
+for i in query:
+	if (i in default_stopwords):
+		query.remove(i)
+
+# print(query)
+
 def xANDy(valx, valy, skips=1):
     res = []
     i = 0
