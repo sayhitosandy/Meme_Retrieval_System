@@ -6,33 +6,73 @@ import string
 from nltk.tokenize import RegexpTokenizer
 import json
 
-curdir=os.getcwd()
+def run_query(query):
+	curdir=os.getcwd()
 
-eng_stemmer = SnowballStemmer('english')
-reg_tokenizer = RegexpTokenizer(r'\w+')
-default_stopwords = set(stopwords.words('english'))
+	eng_stemmer = SnowballStemmer('english')
+	reg_tokenizer = RegexpTokenizer(r'\w+')
+	default_stopwords = set(stopwords.words('english'))
 
-fp = open(os.path.join(curdir,r"captions_to_indexes.json"), 'r')
-captions_to_indexes = json.load(fp)
-fp.close()
+	fp = open(os.path.join(curdir,r"captions_to_indexes.json"), 'r')
+	captions_to_indexes = json.load(fp)
+	fp.close()
 
-fp = open(os.path.join(curdir,r"int_to_filename.json"), 'r')
-int_to_filename = json.load(fp)
-fp.close()
+	fp = open(os.path.join(curdir,r"int_to_filename.json"), 'r')
+	int_to_filename = json.load(fp)
+	fp.close()
 
-print(captions_to_indexes)
-print(int_to_filename)
+	# print(captions_to_indexes)
+	# print(int_to_filename)
 
-print("Enter Query: ", end='')
-q = input()
-query = reg_tokenizer.tokenize(q)
-# print(query)
+	query = reg_tokenizer.tokenize(query)
+	words = [word.lower() for word in query]
+	words = [word for word in words if not word in default_stopwords]
+	words = [eng_stemmer.stem(word) for word in words]
+	query = words
+	# print(query)
 
-for i in query:
-	if (i in default_stopwords):
-		query.remove(i)
+	ans = set()
+	count1 = 0
 
-# print(query)
+	if(len(query)==1):
+		if (query[0] in captions_to_indexes):
+			ans = set(captions_to_indexes[query[0]])
+		return ans
+
+	for i in range(len(query) - 1):
+		x = query[i]
+		y = query[i+1]
+
+		valx = set()
+		valy = set()
+		if (x in captions_to_indexes):
+			valx = set(captions_to_indexes[x])
+		if (y in captions_to_indexes):
+			valy = set(captions_to_indexes[y])
+		# res = xANDy(valx, valy, 1)
+		# print(valx)
+		# print(valy)
+		res = valx.intersection(valy)
+		# print(res)
+		
+		count1 += 1
+		if (count1 == 1):
+			for v in res:
+				ans.add(v)
+		
+		else:
+			r = set(res)
+			ans = ans.intersection(r)		
+		
+		# for item in ans:
+		# 	print(int_to_filename[str(item)])
+	if (len(ans) > 0):
+		print(ans)
+	else:
+		print("No matching item.")
+
+	return ans
+
 
 def xANDy(valx, valy, skips=1):
     res = []
@@ -63,40 +103,6 @@ def xANDy(valx, valy, skips=1):
                 j += 1
     return res
 
-ans = set()
-count1 = 0
-
-for i in range(len(query) - 1):
-	x = query[i]
-	y = query[i+1]
-	x.lower()
-	y.lower()
-
-	x_root=eng_stemmer.stem(x)
-	y_root=eng_stemmer.stem(y)
-	# print(x_root)
-	# print(y_root)
-
-	valx = []
-	valy = []
-	if (x in captions_to_indexes):
-		valx = list(captions_to_indexes[x])
-	if (y in captions_to_indexes):
-		valy = list(captions_to_indexes[y])
-	res = xANDy(valx, valy, 1)
-	
-	count1 += 1
-	if (count1 == 1):
-		for v in res:
-			ans.add(v)
-	
-	else:
-		r = set(res)
-		ans = ans.intersection(r)		
-	
-	# for item in ans:
-	# 	print(int_to_filename[str(item)])
-if (len(ans) > 0):
-	print(ans)
-else:
-	print("No matching item.")
+# print("Enter Query: ", end='')
+# q = input()
+# run_query(query)
