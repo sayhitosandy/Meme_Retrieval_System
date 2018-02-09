@@ -53,10 +53,17 @@ class Application(Frame):
 		self.main_frame.quit.grid(row=1, column=4)
 		# self.main_frame.quit.pack(fill= "both",side="top")
 		self.default_txt = StringVar()
-		self.image_label = Label(self.main_frame.img_frame, justify = CENTER,image=None,bg="#3FADA8",textvariable=self.default_txt)
+
+		self.image_label = Label(self.main_frame.img_frame, justify = CENTER,image=None,bg="#3FADA8")
 		self.image_label.image = None
-		self.default_txt.set("No results to show")
+		# self.default_txt.set("No results to show")
 		self.image_label.pack()
+
+		self.label_images = []
+
+		for i in range(25):
+				self.label_images.append(Label(self.main_frame.img_frame,image=None,bg="#3FADA8"))
+				self.label_images[i].image = None
 
 	def load_query_result(self):
 		# print("hi there, everyone!")
@@ -72,17 +79,40 @@ class Application(Frame):
 			# self.image_label.configure(textvariable=self.default_txt) # Why this is not getting set a second time???
 			self.image_label.image = None
 		else:
-			top_meme = str(res[0])
-			meme_name = self.int_to_filename[top_meme].split(".")[0] + ".jpg"
-			print(meme_name)
-			image = Image.open(os.path.join(os.getcwd(),self.what_dir_to_look_in,meme_name))
-			resized = image.resize((500, 500),Image.ANTIALIAS)
-			photo = ImageTk.PhotoImage(resized)
-			self.image_label.configure(image = photo)
-			self.image_label.image = photo # keep a reference!
-			# self.main_frame.img_frame.config(image=photo)
+
+			# top_meme = str(res[0])
+			# meme_name = self.int_to_filename[top_meme].split(".")[0] + ".jpg"
+			# print(meme_name)
+			# image = Image.open(os.path.join(os.getcwd(),self.what_dir_to_look_in,meme_name))
+			# resized = image.resize((500, 500),Image.ANTIALIAS)
+			# photo = ImageTk.PhotoImage(resized)
+			# self.image_label.configure(image = photo)
+			# self.image_label.image = photo # keep a reference!
 			
-			# self.main_frame.img_frame.pack()
+			res = res[:25]
+			print(res)
+			meme_names = [self.int_to_filename[str(file)].split(".")[0] + ".jpg" for file in res] 
+			images = [Image.open(os.path.join(os.getcwd(),self.what_dir_to_look_in,meme)) for meme in meme_names]
+			images = [image.resize((98, 98),Image.ANTIALIAS) for image in images]
+			photos = [ImageTk.PhotoImage(resized) for resized in images]
+
+			for i in range(25):
+				self.label_images[i].configure(image='',bg="#3FADA8")
+				self.label_images[i].image = ''
+
+			xlen = 28
+			ylen = 5
+			
+			for i in range(len(res)):
+				self.label_images[i] = Label(self.main_frame.img_frame, image=photos[i])
+				self.label_images[i].image = photos[i]
+				# print(xlen,",",ylen)
+				self.label_images[i].place(x=xlen, y=ylen, width=images[i].size[0], height=images[i].size[1])
+				if xlen > 400:
+					ylen = ylen + 100
+					xlen = 28
+				else:
+					xlen = xlen + 108
 
 root = Tk()
 app = Application(master=root)
