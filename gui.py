@@ -10,7 +10,7 @@ class Application(Frame):
 		super().__init__(master)
 		self.pack()
 		self.create_widgets(master)
-		self.what_dir_to_look_in='9gag_small'
+		self.what_dir_to_look_in='9gag'
 		self.int_to_filename = None
 		with open(os.path.join(os.getcwd(),r"int_to_filename.json"), 'r') as fp:
 			self.int_to_filename = json.load(fp)
@@ -76,7 +76,8 @@ class Application(Frame):
 			meme_name = self.int_to_filename[top_meme].split(".")[0] + ".jpg"
 			print(meme_name)
 			image = Image.open(os.path.join(os.getcwd(),self.what_dir_to_look_in,meme_name))
-			photo = ImageTk.PhotoImage(image)
+			resized = image.resize((500, 500),Image.ANTIALIAS)
+			photo = ImageTk.PhotoImage(resized)
 			self.image_label.configure(image = photo)
 			self.image_label.image = photo # keep a reference!
 			# self.main_frame.img_frame.config(image=photo)

@@ -14,7 +14,7 @@ captions_to_indexes={}
 
 curdir=os.getcwd()
 
-what_dir_to_look_in='9gag_small'
+what_dir_to_look_in='9gag'
 
 eng_stemmer = SnowballStemmer('english')
 reg_tokenizer = RegexpTokenizer(r'\w+')
@@ -60,26 +60,29 @@ for root, dirs, files in os.walk(what_dir_to_look_in):
 
 			# Aditya's code: The preprocessing is a little bit too strong as it removes words like can't or don't or doesn't,
 			# but I'll think of something a little less strong later
-			words = reg_tokenizer.tokenize(data['caption'])
-			print(words)
-			# words = [word for word in words if len(word) > 1]
-			#convert to lower case
-			words = [word.lower() for word in words]
-			#remove stopwords
-			words = [word for word in words if not word in default_stopwords]
-	#         #removing numbers
-	#         words = [word for word in words if not word.isnumeric()]
-			#stem the words
-			words = [eng_stemmer.stem(word) for word in words]
-			print(words)
-			#X_preprocessed.append(str(words))
-			for word in words:
-				if word not in captions_to_indexes.keys():
-					captions_to_indexes[word] = set()
-					captions_to_indexes[word].add(label)
-				else:
-					captions_to_indexes[word].add(label)
-
+			try:
+				words = reg_tokenizer.tokenize(data['caption'])
+				print(words)
+				# words = [word for word in words if len(word) > 1]
+				#convert to lower case
+				words = [word.lower() for word in words]
+				#remove stopwords
+				words = [word for word in words if not word in default_stopwords]
+		#         #removing numbers
+		#         words = [word for word in words if not word.isnumeric()]
+				#stem the words
+				words = [eng_stemmer.stem(word) for word in words]
+				print(words)
+				#X_preprocessed.append(str(words))
+				for word in words:
+					if word not in captions_to_indexes.keys():
+						captions_to_indexes[word] = set()
+						captions_to_indexes[word].add(label)
+					else:
+						captions_to_indexes[word].add(label)
+			except Exception as e:
+				pass
+				
 for key in captions_to_indexes.keys():
 	captions_to_indexes[key] = sorted(list(captions_to_indexes[key]))
 print(captions_to_indexes)
