@@ -1,5 +1,6 @@
 ## Efficient Meme Retrieval System
 A weighted model that retrieves a set of memes from database based on user query.
+
 Tags: `information-retrieval`, `gui`, `optical-character-recognition`, `tf-idf`, `memes`
 
 #### Problem Statement
